@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SecureCloud — Interactive CNS Review 1 Demo Video & Academic Presentation</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --video-bg: #070a11;
+      --player-panel: #0d1322;
+      --player-card: #141c30;
+      --player-border: rgba(255, 255, 255, 0.08);
+      --accent-glow: rgba(37, 99, 235, 0.4);
+    }
+    body.video-mode {
+      background: var(--video-bg);
+      color: #f1f5f9;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Top Video Nav */
+    .video-header {
+      background: rgba(13, 19, 34, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--player-border);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .video-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+    .video-brand svg {
+      color: #3b82f6;
+    }
+    .video-brand h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+    .video-brand span.badge-cns {
+      background: rgba(37, 99, 235, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(37, 99, 235, 0.4);
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    /* Main Container */
+    .video-workspace {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 1.25rem;
+      padding: 1.25rem 1.5rem;
+      max-width: 1750px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
+      flex: 1;
+    }
+    @media (max-width: 1100px) {
+      .video-workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Main Screen Stage */
+    .stage-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .video-stage {
+      background: #090e18;
+      border: 1px solid var(--player-border);
+      border-radius: 14px;
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      min-height: 520px;
+      box-shadow: 0 20px 40px -15px rgba(0,0,0,0.8), 0 0 50px -10px var(--accent-glow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Slide Stage Screen Canvas */
+    .stage-screen {
+      flex: 1;
+      padding: 2.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      background: radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.12), transparent 50%),
+                  radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.08), transparent 40%),
+                  #0a0f1d;
+    }
+    .stage-watermark {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.4);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .stage-watermark .rec-dot {
+      width: 8px;
+      height: 8px;
+      background: #ef4444;
+      border-radius: 50%;
+      animation: pulse-rec 1.4s infinite;
+    }
+    @keyframes pulse-rec {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.85); }
+    }
+
+    /* Scene Contents */
+    .scene-view {
+      display: none;
+      animation: fadeIn 0.4s ease-out forwards;
+      height: 100%;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .scene-view.active {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .scene-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #60a5fa;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .scene-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin: 0 0 1rem 0;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .scene-subtitle {
+      font-size: 1.05rem;
+      color: #94a3b8;
+      max-width: 850px;
+      line-height: 1.6;
+      margin-bottom: 1.75rem;
+    }
+
+    /* Visual Grid inside Scene */
+    .scene-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .scene-card {
+      background: rgba(20, 28, 48, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 1.25rem;
+      backdrop-filter: blur(8px);
+      transition: all 0.25s ease;
+    }
+    .scene-card:hover {
+      border-color: rgba(37, 99, 235, 0.5);
+      transform: translateY(-2px);
+    }
+    .scene-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #f8fafc;
+      margin-bottom: 0.5rem;
+    }
+    .scene-card-body {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    /* Simulated Terminal Box inside Video */
+    .terminal-mockup {
+      background: #050811;
+      border: 1px solid rgba(37, 99, 235, 0.3);
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      padding: 1rem;
+      color: #38bdf8;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+      overflow-x: auto;
+      line-height: 1.6;
+      max-height: 250px;
+    }
+    .terminal-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .term-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .term-dot.red { background: #ef4444; }
+    .term-dot.yellow { background: #eab308; }
+    .term-dot.green { background: #22c55e; }
+
+    /* Flow Diagrams */
+    .crypto-flow-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      background: rgba(13, 20, 36, 0.8);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin-top: 1rem;
+    }
+    .flow-node {
+      background: #19233c;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      text-align: center;
+      font-size: 0.8rem;
+      flex: 1;
+    }
+    .flow-node strong { display: block; color: #fff; margin-bottom: 0.25rem; font-size: 0.85rem; }
+    .flow-node span { color: #94a3b8; font-size: 0.72rem; }
+    .flow-arrow { color: #3b82f6; font-weight: bold; font-size: 1.1rem; }
+
+    /* Captions Bar */
+    .captions-bar {
+      background: rgba(5, 8, 16, 0.95);
+      border-top: 1px solid var(--player-border);
+      padding: 0.85rem 1.5rem;
+      font-size: 0.95rem;
+      color: #e2e8f0;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      line-height: 1.5;
+    }
+    .cc-badge {
+      background: #3b82f6;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .cc-text {
+      flex: 1;
+      color: #f1f5f9;
+      font-weight: 500;
+    }
+
+    /* Video Player Controls Bar */
+    .player-controls {
+      background: #0d1322;
+      border: 1px solid var(--player-border);
+      border-radius: 12px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .progress-track {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 9999px;
+      cursor: pointer;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb, #38bdf8);
+      border-radius: 9999px;
+      width: 0%;
+      transition: width 0.1s linear;
+      position: relative;
+    }
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      right: -4px;
+      top: -3px;
+      width: 12px;
+      height: 12px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(37,99,235,0.8);
+    }
+    .controls-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .controls-left, .controls-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .btn-ctrl {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--player-border);
+      color: #f1f5f9;
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-ctrl:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .btn-ctrl.btn-play-master {
+      background: #2563eb;
+      border-color: #3b82f6;
+      color: #fff;
+      padding: 0.5rem 1.25rem;
+    }
+    .btn-ctrl.btn-play-master:hover {
+      background: #1d4ed8;
+      box-shadow: 0 0 15px rgba(37,99,235,0.5);
+    }
+    .time-readout {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    /* Playlist Sidebar */
+    .playlist-panel {
+      background: #0d1322;
+      border: 1px solid var(--player-border);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .playlist-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--player-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .playlist-header h2 {
+      font-size: 0.95rem;
+      margin: 0;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .playlist-items {
+      overflow-y: auto;
+      flex: 1;
+      padding: 0.5rem;
+      max-height: 640px;
+    }
+    .playlist-item {
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      transition: all 0.2s;
+      margin-bottom: 0.25rem;
+      border: 1px solid transparent;
+    }
+    .playlist-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .playlist-item.active {
+      background: rgba(37, 99, 235, 0.15);
+      border-color: rgba(37, 99, 235, 0.35);
+    }
+    .item-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #60a5fa;
+      background: rgba(37,99,235,0.1);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      margin-top: 0.1rem;
+    }
+    .item-meta {
+      flex: 1;
+    }
+    .item-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.3;
+      margin-bottom: 0.25rem;
+    }
+    .item-dur {
+      font-size: 0.72rem;
+      color: #64748b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Screen Capture / Recording Notice */
+    .rec-box {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 10px;
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+    .rec-box strong {
+      color: #34d399;
+    }
+  </style>
+</head>
+<body class="video-mode">
+
+  <!-- Header -->
+  <header class="video-header">
+    <div class="video-brand">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <path d="m9 12 2 2 4-4"/>
+      </svg>
+      <h1>SecureCloud · Review 1 Interactive Demo Video</h1>
+      <span class="badge-cns">CNS 26ECSC403</span>
+    </div>
+    <div style="display: flex; gap: 0.75rem; align-items: center;">
+      <a href="dashboard.html" class="btn-ctrl">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Back to Live Dashboard
+      </a>
+      <a href="https://github.com/AbhinandanNM/securefileshare" target="_blank" class="btn-ctrl">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        GitHub Repository
+      </a>
+    </div>
+  </header>
+
+  <!-- Workspace -->
+  <main class="video-workspace">
+    <!-- Main Left: Video Stage -->
+    <div class="stage-wrapper">
+      <div class="video-stage" id="video-stage">
+        
+        <!-- Stage Watermark -->
+        <div class="stage-watermark">
+          <span class="rec-dot"></span>
+          <span>REVIEW 1 LIVE PRESENTATION · KLE TECH</span>
+        </div>
+
+        <!-- Stage Canvas Scenes (12 Total) -->
+        <div class="stage-screen" id="stage-screen">
+
+          <!-- Scene 1: Introduction -->
+          <div class="scene-view active" id="scene-0">
+            <div class="scene-eyebrow">Slide 1 · Title & Team</div>
+            <h2 class="scene-title">Secure Cloud File Sharing System</h2>
+            <p class="scene-subtitle">
+              Comprehensive end-to-end cryptographic defense suite enforcing authentication, AES-256 confidentiality, SHA-256 integrity, TLS transport, and revocable sharing.
+            </p>
+            <div class="scene-cards-grid">
+              <div class="scene-card">
+                <div class="scene-card-header">🎓 Course & Institutional Guide</div>
+                <div class="scene-card-body">
+                  <strong>Course:</strong> Cryptography & Network Security (26ECSC403)<br>
+                  <strong>Faculty Guide:</strong> Prof. Roopa Badami<br>
+                  <strong>Institution:</strong> KLE Technological University, Hubballi
+                </div>
+              </div>
+              <div class="scene-card">
+                <div class="scene-card-header">👥 Project Team & USNs</div>
+                <div class="scene-card-body">
+                  <strong>Abhinandan N M</strong> (01FE23BCS079) — Architecture<br>
+                  <strong>Sushant Maheshwari</strong> (01FE23BCS075) — Crypto Engine<br>
+                  <strong>Aditya Kadwadkar</strong> (01FE23BCS152) — UI & Audit
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scene 2: Problem Statement -->
+          <div class="scene-view" id="scene-1">
+            <div class="scene-eyebrow">Slide 2 · Problem Statement</div>
+            <h2 class="scene-title">The Cloud Security Dilemma</h2>
+            <p class="scene-subtitle">
+              Standard cloud storage platforms store user payloads in plaintext or delegate keys to the cloud provider, exposing files to unauthorized access, side-channel leaks, and silent tampering.
+            </p>
+            <div class="scene-cards-grid">
+              <div class="scene-card">
+                <div class="scene-card-header" style="color: #ef4444;">🚨 Vulnerability 1: Plaintext at Rest</div>
+                <div class="scene-card-body">If server disks or snapshots are accessed by third parties or rogue administrators, confidential documents are instantly compromised.</div>
+              </div>
+              <div class="scene-card">
+                <div class="scene-card-header" style="color: #f59e0b;">⚠️ Vulnerability 2: Undetected Bit Tampering</div>
+                <div class="scene-card-body">Without cryptographic integrity digests, deliberate byte alterations or bit-rot cannot be detected prior to user consumption.</div>
+              </div>
+              <div class="scene-card">
+                <div class="scene-card-header" style="color: #3b82f6;">🔒 Our Engineered Solution</div>
+                <div class="scene-card-body">Zero-trust architecture combining AES-256-CBC, PBKDF2 Master KEK, SHA-256 digests, and instant cryptographic revocation.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scene 3: Course Objectives O1 - O5 -->
+          <div class="scene-view" id="scene-2">
+            <div class="scene-eyebrow">Slide 3 & 4 · Cryptographic Objectives</div>
+            <h2 class="scene-title">Five Core Cryptographic Objectives</h2>
+            <p class="scene-subtitle">Every objective outlined in our Review 1 presentation is rigorously enforced in code:</p>
+            <div class="scene-cards-grid">
+              <div class="scene-card">
+                <div class="scene-card-header"><strong>O1</strong> Authenticated Access</div>
+                <div class="scene-card-body">bcrypt (cost 12) + 24-hr stateless JWT HMAC-SHA256 tokens. Prevents unauthenticated entry.</div>
+              </div>
+              <div class="scene-card">
+                <div class="scene-card-header"><strong>O2</strong> File Confidentiality</div>
+                <div class="scene-card-body">AES-256 in CBC mode with random 256-bit DEK per file, wrapped by Master KEK via PBKDF2 (100k rounds).</div>
+              </div>
+              <div class="scene-card">
+                <div class="scene-card-header"><strong>O3</strong> Cryptographic Integrity</div>
+                <div class="scene-card-body">Pre-storage SHA-256 digest verified on every download before decryption. Instant tamper rejection.</div>
+              </div>
+              <div class="scene-card">
+                <div class="scene-card-header"><strong>O4</strong> In-Transit Security</div>
+                <div class="scene-card-body">TLS 1.3 / HTTPS encryption guarding all REST endpoints and payloads over the network.</div>
+              </div>
+              <div class="scene-card">
+                <div class="scene-card-header"><strong>O5</strong> Revocable Sharing</div>
+                <div class="scene-card-body">Granular read/write permissions, ISO expiry dates, and immediate server-side revocation.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scene 4: Key Hierarchy & Architecture -->
+          <div class="scene-view" id="scene-3">
+            <div class="scene-eyebrow">Slide 6 & 7 · Key Hierarchy & Architecture</div>
+            <h2 class="scene-title">Two-Tier Key Hierarchy & Storage Flow</h2>
+            <p class="scene-subtitle">Enterprise-grade key encapsulation prevents key re-use and protects against compromised disk snapshots.</p>
+            <div class="crypto-flow-diagram">
+              <div class="flow-node">
+                <strong>1. Master Secret</strong>
+                <span>Application KEK Secret</span>
+              </div>
+              <div class="flow-arrow">➔</div>
+              <div class="flow-node">
+                <strong>2. PBKDF2 (100k)</strong>
+                <span>Derived Master KEK</span>
+              </div>
+              <div class="flow-arrow">➔</div>
+              <div class="flow-node">
+                <strong>3. Random DEK & IV</strong>
+                <span>Unique 256-bit Key / File</span>
+              </div>
+              <div class="flow-arrow">➔</div>
+              <div class="flow-node">
+                <strong>4. AES-256-CBC</strong>
+                <span>Ciphertext Chunk on Disk</span>
+              </div>
+            </div>
+            <div style="margin-top: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #94a3b8; background: rgba(0,0,0,0.4); padding: 0.8rem; border-radius: 6px;">
+              🛡️ <strong>Disk Safety:</strong> Plaintext DEK is never stored on disk. It is encrypted with the Master KEK and stored as <code style="color:#60a5fa">files.encrypted_key</code>.
+            </div>
+          </div>
+
+          <!-- Scene 5: Live Demo O1 (Authentication) -->
+          <div class="scene-view" id="scene-4">
+            <div class="scene-eyebrow">Live Demonstration · Objective O1</div>
+            <h2 class="scene-title">Authentication & Identity Guard</h2>
+            <p class="scene-subtitle">Demonstrating bcrypt-12 password hashing and stateless JWT bearer token authorization.</p>
+            <div class="terminal-mockup">
+              <div class="terminal-bar"><span class="term-dot red"></span><span class="term-dot yellow"></span><span class="term-dot green"></span></div>
+              <div>$ POST /api/auth/register -> username="Abhinandan"</div>
+              <div style="color: #a78bfa;">[bcrypt] Password hashed with adaptive Blowfish (Cost 12, Salt: 16 bytes)</div>
+              <div>$ POST /api/auth/login -> { "username": "Abhinandan", "password": "..." }</div>
+              <div style="color: #34d399;">HTTP/1.1 200 OK -> JWT Issued (alg: HS256, exp: 24 Hours)</div>
+              <div style="color: #94a3b8;">Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc5NDgwNjkyOS...</div>
+              <div style="color: #22c55e;">✔ O1 VERIFIED: Authenticated access strictly enforced.</div>
+            </div>
+          </div>
+
+          <!-- Scene 6: Live Demo O2 (AES-256-CBC) -->
+          <div class="scene-view" id="scene-5">
+            <div class="scene-eyebrow">Live Demonstration · Objective O2</div>
+            <h2 class="scene-title">Payload Encryption & Wireshark Hex Dump</h2>
+            <p class="scene-subtitle">When a sensitive document is uploaded, it is immediately converted to high-entropy ciphertext.</p>
+            <div class="terminal-mockup" style="max-height: 200px;">
+              <div class="terminal-bar"><span class="term-dot red"></span><span class="term-dot yellow"></span><span class="term-dot green"></span></div>
+              <div style="color: #94a3b8;"># Stored ciphertext chunk inspection (uploads/8b4f2c91-...):</div>
+              <div style="color: #60a5fa;">0000   5f 7a 49 e8 1c 3e a9 f2  88 c1 d0 3b ee f4 19 82   |_zI..>.....;....|</div>
+              <div style="color: #60a5fa;">0010   c2 90 e4 bb a1 09 82 fa  4f 11 39 8b d2 55 e0 19   |........O.9..U..|</div>
+              <div style="color: #60a5fa;">0020   83 4a b9 c1 0e fd fa 22  99 e8 1a f3 bc 78 94 a0   |.J.....".....x..|</div>
+              <div style="color: #34d399;">✔ Cipher Algorithm: AES-256-CBC (256-bit Key, PKCS#7 Padding)</div>
+              <div style="color: #22c55e;">✔ O2 VERIFIED: Plaintext is zeroed from memory; disk holds only unreadable ciphertext.</div>
+            </div>
+          </div>
+
+          <!-- Scene 7: Live Demo O3 (Integrity Verification) -->
+          <div class="scene-view" id="scene-6">
+            <div class="scene-eyebrow">Live Demonstration · Objective O3</div>
+            <h2 class="scene-title">SHA-256 Integrity & Anti-Tamper Shield</h2>
+            <p class="scene-subtitle">Before any file download is delivered, its decrypted payload must pass SHA-256 checksum verification.</p>
+            <div class="scene-cards-grid">
+              <div class="scene-card" style="border-color: rgba(34, 197, 94, 0.4);">
+                <div class="scene-card-header" style="color: #22c55e;">Case A: Legitimate File Download</div>
+                <div class="scene-card-body">
+                  <strong>Expected Hash:</strong> <code>e3b0c44298fc1c14...</code><br>
+                  <strong>Computed Hash:</strong> <code>e3b0c44298fc1c14...</code><br>
+                  <span style="color:#22c55e; font-weight:700;">Result: MATCH ✔ -> HTTP 200 Download Delivered</span>
+                </div>
+              </div>
+              <div class="scene-card" style="border-color: rgba(239, 68, 68, 0.4);">
+                <div class="scene-card-header" style="color: #ef4444;">Case B: 1-Byte Tamper Injected</div>
+                <div class="scene-card-body">
+                  <strong>Expected Hash:</strong> <code>e3b0c44298fc1c14...</code><br>
+                  <strong>Computed Hash:</strong> <code>a1f893d258ccb091...</code><br>
+                  <span style="color:#ef4444; font-weight:700;">Result: MISMATCH ✖ -> HTTP 409 Conflict Halts Transfer!</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scene 8: 3rd-Party Attacker Attack Proof -->
+          <div class="scene-view" id="scene-7">
+            <div class="scene-eyebrow">Review 1 Attack Proof · Unauthorized 3rd Party</div>
+            <h2 class="scene-title">What Happens If a 3rd Person Tries to Access?</h2>
+            <p class="scene-subtitle">Direct experimental proof: An unauthorized adversary attempts to forge requests or access another user's file ID.</p>
+            <div class="terminal-mockup">
+              <div class="terminal-bar"><span class="term-dot red"></span><span class="term-dot yellow"></span><span class="term-dot green"></span></div>
+              <div style="color: #f59e0b;">[ATTACK SIMULATION] Adversary Eve (User ID: 3) initiates GET /api/files/1/download</div>
+              <div style="color: #ef4444;">[RBAC GATE] Checking file ownership and active delegation tables...</div>
+              <div style="color: #ef4444;">[ACCESS DENIED] File Owner is Abhinandan (ID: 1). No valid FileShare record found for Eve.</div>
+              <div style="color: #ef4444; font-weight: bold;">HTTP/1.1 403 Forbidden: "Access denied: You do not have permission to access this file"</div>
+              <div style="color: #38bdf8;">[SIEM AUDIT] Event logged: UNAUTHORIZED_ACCESS_BLOCKED (Criticality: CRITICAL)</div>
+              <div style="color: #22c55e;">✔ PROOF CONFIRMED: Attacker received 0 bytes of sensitive data and 0 keys.</div>
+            </div>
+          </div>
+
+          <!-- Scene 9: Live Demo O5 (Revocable Sharing) -->
+          <div class="scene-view" id="scene-8">
+            <div class="scene-eyebrow">Live Demonstration · Objective O5</div>
+            <h2 class="scene-title">Permission Delegation & Instant Revocation</h2>
+            <p class="scene-subtitle">Collaborating securely: Granting Sushant Read access, followed by immediate cryptographic revocation.</p>
+            <div class="scene-cards-grid">
+              <div class="scene-card">
+                <div class="scene-card-header">Step 1: Grant Access</div>
+                <div class="scene-card-body">
+                  Owner delegates access to <code>Sushant</code> with <code>READ</code> permission.<br>
+                  <span style="color:#22c55e;">✔ Sushant can download & decrypt successfully.</span>
+                </div>
+              </div>
+              <div class="scene-card">
+                <div class="scene-card-header">Step 2: Instant Revoke</div>
+                <div class="scene-card-body">
+                  Owner clicks <strong>Revoke</strong> on the dashboard.<br>
+                  Server marks <code>revoked = True</code> in the database.
+                </div>
+              </div>
+              <div class="scene-card">
+                <div class="scene-card-header">Step 3: Verification</div>
+                <div class="scene-card-body">
+                  Sushant retries download -> <span style="color:#ef4444; font-weight:700;">HTTP 403 Access Denied</span>.<br>
+                  <span style="color:#22c55e;">✔ O5 VERIFIED: Immediate access termination.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scene 10: Transport Security (O4) & SIEM -->
+          <div class="scene-view" id="scene-9">
+            <div class="scene-eyebrow">Live Demonstration · Objective O4 & Audit Trail</div>
+            <h2 class="scene-title">TLS 1.3 Encryption & SIEM Audit Trail</h2>
+            <p class="scene-subtitle">Transport layer encryption blocks network eavesdropping while immutable security logs record every transaction.</p>
+            <div class="scene-cards-grid">
+              <div class="scene-card">
+                <div class="scene-card-header">🔒 Objective O4: TLS 1.3 / HTTPS</div>
+                <div class="scene-card-body">
+                  All REST queries, authentication headers, and multipart file chunks travel encrypted across the network wire. Network sniffers (e.g. Wireshark) observe only TLS ciphertext.
+                </div>
+              </div>
+              <div class="scene-card">
+                <div class="scene-card-header">📊 Centralized Security Audit Trail</div>
+                <div class="scene-card-body">
+                  Tracks <code>LOGIN_SUCCESS</code>, <code>FILE_UPLOAD_ENCRYPT</code>, <code>FILE_TAMPER_SIMULATED</code>, and <code>UNAUTHORIZED_ACCESS_BLOCKED</code> with high-precision UTC timestamps.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scene 11: Automated Test Suite (demo_proof.py) -->
+          <div class="scene-view" id="scene-10">
+            <div class="scene-eyebrow">Automated CLI Verification Suite</div>
+            <h2 class="scene-title">Automated Verification: 8 of 8 Passed</h2>
+            <p class="scene-subtitle">Full end-to-end regression test executed automatically via <code>python demo_proof.py</code>.</p>
+            <div class="terminal-mockup">
+              <div class="terminal-bar"><span class="term-dot red"></span><span class="term-dot yellow"></span><span class="term-dot green"></span></div>
+              <div style="color: #22c55e;">[TEST 1] Objective O1 (bcrypt + JWT Auth): ............ [PASS]</div>
+              <div style="color: #22c55e;">[TEST 2] Objective O2 (AES-256-CBC Encryption): ........ [PASS]</div>
+              <div style="color: #22c55e;">[TEST 3] Objective O3 (SHA-256 Integrity Pre-storage): . [PASS]</div>
+              <div style="color: #22c55e;">[TEST 4] Objective O4 (TLS 1.3 / HTTPS Active): ........ [PASS]</div>
+              <div style="color: #22c55e;">[TEST 5] Objective O5 (Share & Revoke Cycle): .......... [PASS]</div>
+              <div style="color: #22c55e;">[TEST 6] Attack 1 (3rd Party Unauthorized Access): .... [PASS - 403 Forbidden]</div>
+              <div style="color: #22c55e;">[TEST 7] Attack 2 (Unauthenticated Request): ........... [PASS - 401 Unauthorized]</div>
+              <div style="color: #22c55e;">[TEST 8] Attack 3 (Ciphertext 1-Byte Tamper Attempt): .. [PASS - 409 Conflict]</div>
+              <div style="color: #38bdf8; font-weight: bold; margin-top: 0.5rem;">🎉 100% SUCCESS: All course objectives and threat models proven in practice!</div>
+            </div>
+          </div>
+
+          <!-- Scene 12: Viva Defense & Conclusion -->
+          <div class="scene-view" id="scene-11">
+            <div class="scene-eyebrow">Review 1 Viva Defense & Conclusion</div>
+            <h2 class="scene-title">Review 1 Ready for Prof. Roopa Badami</h2>
+            <p class="scene-subtitle">All requirements met with mathematical rigor and production-quality software engineering.</p>
+            <div class="scene-cards-grid">
+              <div class="scene-card" style="border-color: rgba(37,99,235,0.4);">
+                <div class="scene-card-header">🎯 What We Have Accomplished</div>
+                <div class="scene-card-body">
+                  ✔ Delivered complete Flask backend + Enterprise frontend<br>
+                  ✔ Full 2-tier key hierarchy (PBKDF2 100k rounds)<br>
+                  ✔ Zero plaintext on disk; live attack laboratory<br>
+                  ✔ Clean code pushed to GitHub: <code>AbhinandanNM/securefileshare</code>
+                </div>
+              </div>
+              <div class="scene-card" style="border-color: rgba(16,185,129,0.4);">
+                <div class="scene-card-header">🚀 Next Stage: Review 2 Roadmap</div>
+                <div class="scene-card-body">
+                  - Asymmetric RSA-4096 / ECC Key Exchange for DEK distribution<br>
+                  - HMAC-SHA256 authenticated encryption mode (AES-GCM)<br>
+                  - Distributed cloud object storage connectors (AWS S3 / GCP Storage)
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Captions / Live Narration Subtitles Bar -->
+        <div class="captions-bar">
+          <span class="cc-badge">NARRATION</span>
+          <span class="cc-text" id="cc-text">Welcome to the Review 1 presentation for the Secure Cloud File Sharing Cryptosystem, CNS Course 26ECSC403 at KLE Technological University.</span>
+        </div>
+
+      </div>
+
+      <!-- Player Controls -->
+      <div class="player-controls">
+        <div class="progress-track" id="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="controls-row">
+          <div class="controls-left">
+            <button class="btn-ctrl btn-play-master" id="btn-play">
+              <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span id="play-text">Play Demo</span>
+            </button>
+            <button class="btn-ctrl" id="btn-prev" title="Previous Chapter">⏮ Prev</button>
+            <button class="btn-ctrl" id="btn-next" title="Next Chapter">Next ⏭</button>
+            <span class="time-readout" id="time-readout">00:00 / 08:30</span>
+          </div>
+
+          <div class="controls-right">
+            <button class="btn-ctrl" id="btn-voice" title="Toggle AI Spoken Voice Narration">
+              <span id="voice-icon">🔊</span>
+              <span id="voice-text">Voice On</span>
+            </button>
+            <button class="btn-ctrl" id="btn-speed">1.0x</button>
+            <button class="btn-ctrl" id="btn-fullscreen" title="Toggle Fullscreen">⛶ Fullscreen</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recording Quick Guide -->
+      <div class="rec-box">
+        <strong>💡 Screen Recording Tip for Review 1:</strong>
+        To generate an <code>.mp4</code> video file right from your screen, press <kbd style="background:#1e293b; padding:2px 6px; border-radius:4px; color:#fff;">Win + Alt + R</kbd> (Windows Game Bar Screen Recorder) or open OBS Studio, then click <strong>Play Demo</strong> above. The presentation will auto-advance each slide while speaking the full narration voiceover!
+      </div>
+    </div>
+
+    <!-- Right Side: Interactive Chapters Playlist -->
+    <aside class="playlist-panel">
+      <div class="playlist-header">
+        <h2>Presentation Chapters</h2>
+        <span style="font-size: 0.72rem; color: #60a5fa; font-weight: 700;">12 SCENES</span>
+      </div>
+      <div class="playlist-items" id="playlist-items">
+        <!-- Rendered by JS -->
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    /* ==========================================================================
+       Interactive Video Presentation Controller
+       CNS 26ECSC403 · KLE Technological University
+       ========================================================================== */
+
+    const CHAPTERS = [
+      {
+        id: 0,
+        title: "Title & Team Introduction",
+        sub: "Slide 1 · Guide & USN Details",
+        duration: 35,
+        narration: "Good morning respected guide Professor Roopa Badami and evaluators. We are presenting our project, the Secure Cloud File Sharing Cryptosystem, for course 26ECSC403 at KLE Technological University. Our team consists of Abhinandan N M, Sushant Maheshwari, and Aditya Kadwadkar. This system implements end-to-end cryptographic safeguards for files stored and shared in cloud environments."
+      },
+      {
+        id: 1,
+        title: "Problem Statement & Cloud Vulnerabilities",
+        sub: "Slide 2 · Risks of Plaintext Storage",
+        duration: 45,
+        narration: "Slide 2 addresses the fundamental problem in modern cloud storage: files shared across distributed networks are vulnerable to interception, server-side data leaks, and silent tampering unless five core security dimensions are enforced together. If underlying storage drives or database backups are accessed, plaintext files are immediately compromised. Our solution guarantees zero plaintext data at rest or in transit."
+      },
+      {
+        id: 2,
+        title: "Cryptographic Objectives O1 to O5",
+        sub: "Slide 3 · Cryptographic Blueprint",
+        duration: 50,
+        narration: "To address these threats, we defined five measurable engineering objectives. O1 enforces authenticated access using bcrypt cost 12 and stateless JSON Web Tokens. O2 guarantees confidentiality through AES-256 in CBC mode. O3 delivers integrity verification with SHA-256 digests. O4 encrypts all network communication over TLS 1.3 HTTPS. And O5 provides granular, permission-based sharing with instant cryptographic revocation."
+      },
+      {
+        id: 3,
+        title: "Key Hierarchy & System Architecture",
+        sub: "Slide 6 & 7 · PBKDF2 Key Encapsulation",
+        duration: 50,
+        narration: "On Slides 6 and 7, we illustrate our two-tier key hierarchy. We derive a 256-bit Key Encryption Key from the application secret using PBKDF2 with 100,000 iterations and cryptographic salt. For each uploaded file, a unique 256-bit Data Encryption Key and 128-bit initialization vector are generated. The data key is encrypted with the master key and stored alongside the ciphertext, ensuring keys are never exposed in plaintext."
+      },
+      {
+        id: 4,
+        title: "Demo 1: Authentication Guard (O1)",
+        sub: "bcrypt-12 Hashing & JWT Bearer Guard",
+        duration: 40,
+        narration: "Here we demonstrate Objective O1. When a user registers, their password is salted and hashed using bcrypt with an adaptive work factor of 12. Upon successful authentication, our backend issues a stateless 24-hour JWT token signed with HMAC-SHA256. Unauthenticated requests are immediately rejected by our API gateway with HTTP 401 Unauthorized."
+      },
+      {
+        id: 5,
+        title: "Demo 2: File Encryption & Hex Dump (O2)",
+        sub: "AES-256-CBC & Stored Ciphertext Inspection",
+        duration: 45,
+        narration: "For Objective O2, when a confidential file is uploaded, the cryptographic engine hashes the plaintext, generates a per-file key, and performs AES-256-CBC encryption with PKCS#7 padding. Inspecting the physical disk reveals pure high-entropy ciphertext. Even if an adversary steals the disk chunk, the content is mathematically unreadable without the wrapped key and master secret."
+      },
+      {
+        id: 6,
+        title: "Demo 3: SHA-256 Integrity & Anti-Tamper (O3)",
+        sub: "Pre-storage Digest vs 1-Byte Flip Detection",
+        duration: 45,
+        narration: "Objective O3 guarantees integrity. Before any file is stored, its SHA-256 digest is recorded. During download, the server decrypts the payload and computes its real-time hash. If even a single byte has been flipped or tampered on disk, the computed hash does not match the stored digest, and the server halts the download with HTTP 409 Conflict, alerting the security log."
+      },
+      {
+        id: 7,
+        title: "Demo 4: 3rd-Party Attacker Access Proof",
+        sub: "Review 1 Proof · 403 Forbidden Response",
+        duration: 45,
+        narration: "In our Review 1 threat proof, we demonstrate what happens when an unauthorized third-party attempts to access a private file. An attacker, Eve, crafts a direct request for a file owned by Abhinandan. Our role-based access control and share verification gate immediately intercept the request, block the transfer with HTTP 403 Forbidden, and log a critical security event in the audit trail."
+      },
+      {
+        id: 8,
+        title: "Demo 5: Permission Sharing & Revocation (O5)",
+        sub: "Granular Read/Write Access & Instant Revocation",
+        duration: 45,
+        narration: "Objective O5 governs secure collaboration. A file owner can delegate Read or Write permissions to specific users, such as Sushant, with optional expiry timestamps. When the owner clicks Revoke, access is severed instantly. When Sushant attempts to download the file again, the server rejects the request with HTTP 403, proving complete revocation control."
+      },
+      {
+        id: 9,
+        title: "Demo 6: Transport Security (O4) & SIEM Audit",
+        sub: "TLS 1.3 Encryption & Immutable Audit Logs",
+        duration: 40,
+        narration: "Objective O4 protects files in transit. All communications between browser and server run over TLS 1.3 HTTPS, preventing Wireshark packet eavesdropping. Furthermore, our centralized SIEM-style audit trail logs all security-critical operations, providing full non-repudiation and visibility for forensic analysis."
+      },
+      {
+        id: 10,
+        title: "Automated Test Suite (demo_proof.py)",
+        sub: "8 of 8 Automated Test Cases Passing",
+        duration: 40,
+        narration: "To rigorously validate our system, we developed demo_proof.py, an automated verification script that executes 8 comprehensive test cases against the live running server. All 8 tests—including bcrypt authentication, AES encryption, SHA-256 verification, HTTPS transport, share revocation, and three attack scenarios—pass with a 100 percent success rate."
+      },
+      {
+        id: 11,
+        title: "Viva Defense Summary & Next Steps",
+        sub: "Review 1 Accomplishments & Review 2 Roadmap",
+        duration: 30,
+        narration: "In conclusion, our project fulfills every requirement of Review 1. All code has been staged and pushed to our team GitHub repository at AbhinandanNM/securefileshare. For Review 2, we plan to implement RSA-4096 key distribution and AES-GCM authenticated encryption. Thank you, Professor Roopa Badami, for your guidance. We now welcome any questions."
+      }
+    ];
+
+    let currentChapter = 0;
+    let isPlaying = false;
+    let voiceEnabled = true;
+    let playbackSpeed = 1.0;
+    let elapsedSeconds = 0;
+    let chapterTimer = null;
+    let synth = window.speechSynthesis;
+    let currentUtterance = null;
+
+    // Total Duration
+    const totalDuration = CHAPTERS.reduce((sum, ch) => sum + ch.duration, 0);
+
+    // DOM Elements
+    const btnPlay = document.getElementById('btn-play');
+    const playIcon = document.getElementById('play-icon');
+    const playText = document.getElementById('play-text');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    const btnVoice = document.getElementById('btn-voice');
+    const voiceIcon = document.getElementById('voice-icon');
+    const voiceText = document.getElementById('voice-text');
+    const btnSpeed = document.getElementById('btn-speed');
+    const btnFullscreen = document.getElementById('btn-fullscreen');
+    const progressFill = document.getElementById('progress-fill');
+    const progressTrack = document.getElementById('progress-track');
+    const timeReadout = document.getElementById('time-readout');
+    const ccText = document.getElementById('cc-text');
+    const playlistContainer = document.getElementById('playlist-items');
+
+    // Initialize Playlist
+    function renderPlaylist() {
+      playlistContainer.innerHTML = CHAPTERS.map((ch, idx) => `
+        <div class="playlist-item ${idx === 0 ? 'active' : ''}" data-idx="${idx}" onclick="selectChapter(${idx})">
+          <span class="item-num">${String(idx + 1).padStart(2, '0')}</span>
+          <div class="item-meta">
+            <div class="item-title">${ch.title}</div>
+            <div class="item-dur">${ch.sub} · ${formatTime(ch.duration)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function updateTimeDisplay() {
+      let cumulative = 0;
+      for (let i = 0; i < currentChapter; i++) cumulative += CHAPTERS[i].duration;
+      const currentTotal = cumulative + elapsedSeconds;
+      timeReadout.textContent = `${formatTime(currentTotal)} / ${formatTime(totalDuration)}`;
+      const pct = Math.min(100, (currentTotal / totalDuration) * 100);
+      progressFill.style.width = `${pct}%`;
+    }
+
+    function selectChapter(idx) {
+      if (idx < 0 || idx >= CHAPTERS.length) return;
+      currentChapter = idx;
+      elapsedSeconds = 0;
+
+      // Update Scenes
+      document.querySelectorAll('.scene-view').forEach(sc => sc.classList.remove('active'));
+      const activeScene = document.getElementById(`scene-${idx}`);
+      if (activeScene) activeScene.classList.add('active');
+
+      // Update Playlist Highlighting
+      document.querySelectorAll('.playlist-item').forEach((item, i) => {
+        item.classList.toggle('active', i === idx);
+      });
+
+      // Update Subtitles & Audio
+      const ch = CHAPTERS[idx];
+      ccText.textContent = ch.narration;
+
+      if (synth) synth.cancel();
+
+      if (isPlaying && voiceEnabled) {
+        speakNarration(ch.narration);
+      }
+
+      updateTimeDisplay();
+    }
+
+    function speakNarration(text) {
+      if (!('speechSynthesis' in window) || !voiceEnabled) return;
+      synth.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = playbackSpeed;
+      utterance.pitch = 1.0;
+      utterance.lang = 'en-US';
+
+      // Pick best English voice if available
+      const voices = synth.getVoices();
+      const goodVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('David') || v.name.includes('Samantha')));
+      if (goodVoice) utterance.voice = goodVoice;
+
+      utterance.onend = () => {
+        // When speech finishes, advance to next chapter if playing
+        if (isPlaying && currentChapter < CHAPTERS.length - 1) {
+          selectChapter(currentChapter + 1);
+        } else if (isPlaying && currentChapter === CHAPTERS.length - 1) {
+          pauseDemo();
+        }
+      };
+
+      currentUtterance = utterance;
+      synth.speak(utterance);
+    }
+
+    function playDemo() {
+      isPlaying = true;
+      playText.textContent = 'Pause';
+      playIcon.innerHTML = `<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>`;
+      btnPlay.classList.add('btn-play-master');
+
+      if (voiceEnabled) {
+        speakNarration(CHAPTERS[currentChapter].narration);
+      }
+
+      if (chapterTimer) clearInterval(chapterTimer);
+      chapterTimer = setInterval(() => {
+        elapsedSeconds += 1;
+        updateTimeDisplay();
+        if (elapsedSeconds >= CHAPTERS[currentChapter].duration && !voiceEnabled) {
+          if (currentChapter < CHAPTERS.length - 1) {
+            selectChapter(currentChapter + 1);
+          } else {
+            pauseDemo();
+          }
+        }
+      }, 1000 / playbackSpeed);
+    }
+
+    function pauseDemo() {
+      isPlaying = false;
+      playText.textContent = 'Play Demo';
+      playIcon.innerHTML = `<polygon points="5 3 19 12 5 21 5 3"/>`;
+      if (synth) synth.cancel();
+      if (chapterTimer) clearInterval(chapterTimer);
+    }
+
+    // Event Listeners
+    btnPlay.addEventListener('click', () => {
+      if (isPlaying) pauseDemo();
+      else playDemo();
+    });
+
+    btnPrev.addEventListener('click', () => {
+      if (currentChapter > 0) selectChapter(currentChapter - 1);
+    });
+
+    btnNext.addEventListener('click', () => {
+      if (currentChapter < CHAPTERS.length - 1) selectChapter(currentChapter + 1);
+    });
+
+    btnVoice.addEventListener('click', () => {
+      voiceEnabled = !voiceEnabled;
+      voiceIcon.textContent = voiceEnabled ? '🔊' : '🔇';
+      voiceText.textContent = voiceEnabled ? 'Voice On' : 'Muted';
+      if (!voiceEnabled && synth) synth.cancel();
+      if (voiceEnabled && isPlaying) speakNarration(CHAPTERS[currentChapter].narration);
+    });
+
+    const speeds = [1.0, 1.25, 1.5];
+    let speedIdx = 0;
+    btnSpeed.addEventListener('click', () => {
+      speedIdx = (speedIdx + 1) % speeds.length;
+      playbackSpeed = speeds[speedIdx];
+      btnSpeed.textContent = `${playbackSpeed.toFixed(1)}x`;
+      if (isPlaying) {
+        pauseDemo();
+        playDemo();
+      }
+    });
+
+    btnFullscreen.addEventListener('click', () => {
+      const stage = document.getElementById('video-stage');
+      if (!document.fullscreenElement) {
+        stage.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    });
+
+    progressTrack.addEventListener('click', (e) => {
+      const rect = progressTrack.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const pct = clickX / rect.width;
+      const targetSec = pct * totalDuration;
+
+      let cum = 0;
+      for (let i = 0; i < CHAPTERS.length; i++) {
+        if (targetSec <= cum + CHAPTERS[i].duration || i === CHAPTERS.length - 1) {
+          selectChapter(i);
+          elapsedSeconds = targetSec - cum;
+          break;
+        }
+        cum += CHAPTERS[i].duration;
+      }
+      updateTimeDisplay();
+    });
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      renderPlaylist();
+      selectChapter(0);
+      updateTimeDisplay();
+    });
+  </script>
+</body>
+</html>
