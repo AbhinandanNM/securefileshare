@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SecureCloud — CNS Enterprise File Cryptosystem</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="auth-page">
+
+  <div class="auth-card">
+    <!-- Brand Logo -->
+    <div class="auth-logo">
+      <div class="brand-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+      <div>
+        <span>SecureCloud</span>
+      </div>
+    </div>
+    <p class="auth-sub">Cryptography & Network Security (26ECSC403) · Secure Storage Suite</p>
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="login">Sign In</button>
+      <button class="tab-btn" data-tab="register">Register New User</button>
+    </div>
+
+    <!-- ---- SIGN IN PANEL ---- -->
+    <div id="tab-login" class="tab-panel active">
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label for="login-username">Username</label>
+          <input type="text" id="login-username" placeholder="e.g. Abhinandan" autocomplete="username" required />
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required />
+        </div>
+        <div id="login-error" class="form-error"></div>
+        <button type="submit" class="btn btn-primary" id="login-btn">
+          <span id="login-btn-text">Sign In</span>
+          <span id="login-spinner" class="spinner" style="display:none;"></span>
+        </button>
+      </form>
+      <!-- Demo credentials hint for Review -->
+      <div style="margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2); border-radius: 8px; font-size: 0.75rem; color: var(--text-muted);">
+        <div style="font-weight: 700; color: var(--accent-blue); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.04em;">📋 Demo Accounts</div>
+        <div style="font-family: 'JetBrains Mono', monospace; display: flex; flex-direction: column; gap: 0.25rem;">
+          <span>Abhinandan / <span style="color:var(--accent-emerald)">Abhinandan@123</span></span>
+          <span>Sushant / <span style="color:var(--accent-emerald)">Sushant@123</span></span>
+          <span>Abhi / <span style="color:var(--accent-emerald)">Abhi@123</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- REGISTER PANEL ---- -->
+    <div id="tab-register" class="tab-panel">
+      <form id="register-form" novalidate>
+        <div class="form-group">
+          <label for="reg-username">Username</label>
+          <input type="text" id="reg-username" placeholder="e.g. Sushant" autocomplete="username" required />
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Institutional Email</label>
+          <input type="email" id="reg-email" placeholder="student@kletech.ac.in" autocomplete="email" required />
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Password (hashed via bcrypt-12)</label>
+          <input type="password" id="reg-password" placeholder="••••••••" autocomplete="new-password" required />
+        </div>
+        <div class="form-group">
+          <label for="reg-confirm">Confirm Password</label>
+          <input type="password" id="reg-confirm" placeholder="••••••••" autocomplete="new-password" required />
+        </div>
+        <div id="register-error" class="form-error"></div>
+        <button type="submit" class="btn btn-primary" id="register-btn">
+          <span id="register-btn-text">Register User Account</span>
+          <span id="register-spinner" class="spinner" style="display:none;"></span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Security Badges Footer -->
+    <div style="margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 0.5rem;">
+      <div style="font-size: 0.72rem; color: var(--text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Enforced Cryptographic Standards</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+        <span class="sec-pill" style="font-size: 0.7rem;"><span class="dot green"></span>AES-256-CBC</span>
+        <span class="sec-pill" style="font-size: 0.7rem;"><span class="dot green"></span>SHA-256 Digest</span>
+        <span class="sec-pill" style="font-size: 0.7rem;"><span class="dot green"></span>bcrypt (Cost 12)</span>
+        <span class="sec-pill" style="font-size: 0.7rem;"><span class="dot green"></span>TLS 1.3 / HTTPS</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+
+  <script src="js/auth.js"></script>
+</body>
+</html>

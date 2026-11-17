@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SecureCloud — CNS Enterprise File Cryptosystem</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ===== TOP NAVIGATION / SECURITY HEADER ===== -->
+  <header class="navbar">
+    <div class="navbar-left">
+      <div class="navbar-brand">
+        <div class="brand-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">SecureCloud</span>
+          <span class="brand-sub">CNS 26ECSC403 Cryptosystem</span>
+        </div>
+      </div>
+
+      <div class="security-pills-bar">
+        <span class="sec-pill" title="Symmetric Payload Encryption"><span class="dot green"></span>AES-256-CBC</span>
+        <span class="sec-pill" title="Cryptographic Integrity Digest"><span class="dot green"></span>SHA-256 Hash</span>
+        <span class="sec-pill" title="Key Encryption Key Hierarchy"><span class="dot green"></span>PBKDF2 100k KEK</span>
+        <span class="sec-pill" title="Transport Layer Security"><span class="dot green"></span>TLS 1.3 / HTTPS</span>
+      </div>
+    </div>
+
+    <div class="navbar-right">
+      <div class="user-pill">
+        <div class="user-avatar" id="user-avatar">U</div>
+        <div class="user-info">
+          <span id="username-display" class="user-name">Loading...</span>
+          <span class="user-role">Registered User (File Owner)</span>
+        </div>
+      </div>
+      <button id="logout-btn" class="btn-logout" title="Sign out and destroy session JWT">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        <span>Logout</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== MAIN BODY ===== -->
+  <div class="app-body">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+      <nav class="sidebar-menu">
+        <div class="menu-section-label">CRYPTOGRAPHIC STORAGE</div>
+        <button class="nav-item active" data-view="my-files">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span>My Encrypted Vault</span>
+          <span class="nav-badge" id="my-files-count">0</span>
+        </button>
+
+        <button class="nav-item" data-view="shared-with-me">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span>Shared With Me</span>
+          <span class="nav-badge" id="shared-count">0</span>
+        </button>
+
+        <div class="menu-section-label" style="margin-top: 1.5rem;">MONITORING & DEFENSE</div>
+        <button class="nav-item" data-view="audit-trail">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+          <span>Security Audit Trail</span>
+          <span class="nav-pulse"></span>
+        </button>
+
+        <button class="nav-item" data-view="attack-lab">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m14.5 9-5 5"/>
+            <path d="m9.5 9 5 5"/>
+          </svg>
+          <span>Live Attack & Proof Lab</span>
+          <span class="badge red" style="font-size:0.65rem; padding:0.1rem 0.4rem; margin-left:auto;">DEMO</span>
+        </button>
+
+        <button class="nav-item" data-view="architecture-info">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="18" x="3" y="3" rx="2"/>
+            <path d="m9 8 6 4-6 4Z"/>
+          </svg>
+          <span>Review 1 Spec & Arch</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Security Status Footer -->
+      <div class="sidebar-status-box">
+        <div class="status-header">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Cryptographic Engine Active</span>
+        </div>
+        <p class="status-detail">AES-256 DEKs wrapped with Master KEK via PBKDF2</p>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT AREA ===== -->
+    <main class="content-area">
+
+      <!-- ===== KPI STATS ROW ===== -->
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          </div>
+          <div class="kpi-data">
+            <span class="kpi-label">Protected Files</span>
+            <span class="kpi-value" id="kpi-files-count">0</span>
+            <span class="kpi-sub">In AES-256 Vault</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon green">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="kpi-data">
+            <span class="kpi-label">Integrity Enforced</span>
+            <span class="kpi-value" id="kpi-integrity-status">100%</span>
+            <span class="kpi-sub">SHA-256 Pre-Verified</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon purple">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="kpi-data">
+            <span class="kpi-label">Key Management</span>
+            <span class="kpi-value">Two-Tier</span>
+            <span class="kpi-sub">DEK (256b) + KEK</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon amber">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="kpi-data">
+            <span class="kpi-label">Simulated Tampers</span>
+            <span class="kpi-value" id="kpi-tamper-count">0</span>
+            <span class="kpi-sub">Academic O3 Lab</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== VIEW 1: MY ENCRYPTED VAULT ===== -->
+      <section id="view-my-files" class="view-panel active">
+        <!-- Upload Zone -->
+        <div class="card upload-card">
+          <div class="upload-dropzone" id="upload-dropzone">
+            <div class="upload-icon-pulse">
+              <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+            </div>
+            <div class="upload-text">
+              <h3>Upload & Protect Sensitive File</h3>
+              <p>Files are hashed with SHA-256 and encrypted with AES-256-CBC with a random DEK before storage.</p>
+            </div>
+            <label class="btn btn-primary file-input-label">
+              <span>Select File</span>
+              <input type="file" id="file-input" style="display:none;" />
+            </label>
+          </div>
+
+          <!-- Dynamic Upload Cryptographic Progress -->
+          <div id="upload-progress-box" class="upload-progress-box" style="display:none;">
+            <div class="progress-steps">
+              <span class="step active" id="step-hash">1. SHA-256 Hashing</span>
+              <span class="step" id="step-key">2. AES-256 Key Wrap</span>
+              <span class="step" id="step-enc">3. AES-CBC Encryption</span>
+              <span class="step" id="step-store">4. Cloud Storage</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="upload-bar-fill" style="width:0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Files Table Card -->
+        <div class="card table-card">
+          <div class="card-header">
+            <div>
+              <h2>Encrypted Files Vault</h2>
+              <p class="section-desc">Ciphertext at rest in <code>uploads/</code> directory. Decryption occurs only upon authorized download.</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="refresh-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Refresh
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>FILE NAME</th>
+                  <th>PAYLOAD SIZE</th>
+                  <th>CIPHER ALGORITHM</th>
+                  <th>SHA-256 INTEGRITY DIGEST</th>
+                  <th>STATUS</th>
+                  <th style="text-align: right;">CRYPTOGRAPHIC ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="files-tbody">
+                <tr>
+                  <td colspan="6" class="empty-state">Loading encrypted files...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== VIEW 2: SHARED WITH ME ===== -->
+      <section id="view-shared-with-me" class="view-panel" style="display:none;">
+        <div class="card table-card">
+          <div class="card-header">
+            <div>
+              <h2>Files Shared With Me</h2>
+              <p class="section-desc">Access granted via permission-based revocable delegation (Objective O5).</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="refresh-shared-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Refresh
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>FILE NAME</th>
+                  <th>SHARED BY</th>
+                  <th>PERMISSION</th>
+                  <th>EXPIRY STATUS</th>
+                  <th>SHA-256 DIGEST</th>
+                  <th style="text-align: right;">ACTION</th>
+                </tr>
+              </thead>
+              <tbody id="shared-tbody">
+                <tr>
+                  <td colspan="6" class="empty-state">No files shared with you yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== VIEW 3: SECURITY AUDIT TRAIL ===== -->
+      <section id="view-audit-trail" class="view-panel" style="display:none;">
+        <div class="card table-card">
+          <div class="card-header">
+            <div>
+              <h2>Live Security Audit Trail (SIEM)</h2>
+              <p class="section-desc">Immutable audit log recording every authentication, encryption, integrity verification, and access grant event.</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="refresh-audit-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Refresh Logs
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>TIMESTAMP</th>
+                  <th>EVENT TYPE</th>
+                  <th>USER / ACTOR</th>
+                  <th>TARGET FILE</th>
+                  <th>STATUS</th>
+                  <th>CRYPTOGRAPHIC EVENT DETAILS</th>
+                </tr>
+              </thead>
+              <tbody id="audit-tbody">
+                <tr>
+                  <td colspan="6" class="empty-state">Loading audit logs...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== VIEW 5: LIVE ATTACK & PROOF LAB ===== -->
+      <section id="view-attack-lab" class="view-panel" style="display:none;">
+        <div class="card" style="padding: 1.75rem;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 1.25rem;">
+            <div>
+              <h2>🧪 Live Cryptographic Proof & Attack Simulation Lab</h2>
+              <p class="section-desc">Interactive defense demonstrations proving Objectives O1, O2, O3, O4, and O5 in front of faculty / guide.</p>
+            </div>
+            <span class="badge red" style="font-size:0.8rem; padding: 0.35rem 0.75rem;">REVIEW 1 PROOF LAB</span>
+          </div>
+
+          <!-- Select File Dropdown for Lab -->
+          <div style="background:var(--bg-input); border:1px solid var(--border-subtle); padding:1rem 1.25rem; border-radius:var(--radius-md); margin-bottom:1.5rem; display:flex; align-items:center; gap:1.25rem; flex-wrap:wrap;">
+            <label style="margin:0; font-weight:700;">Select Target File to Test:</label>
+            <select id="lab-file-select" style="background:var(--bg-card); color:var(--text-main); border:1px solid var(--border-subtle); padding:0.45rem 0.85rem; border-radius:var(--radius-sm); min-width:240px; font-family:inherit;">
+              <option value="">Loading files...</option>
+            </select>
+            <span style="font-size:0.8rem; color:var(--text-dim);">All tests below execute against this target encrypted file.</span>
+          </div>
+
+          <!-- Attack / Proof Cards Grid -->
+          <div class="arch-grid">
+            
+            <!-- PROOF 1: 3RD PERSON ATTACK SIMULATION -->
+            <div class="arch-box" style="border-left: 3px solid var(--accent-rose);">
+              <div class="arch-header">
+                <span class="badge red">ATTACK 1</span>
+                <h3>3rd-Person Unauthorized Access Attempt</h3>
+              </div>
+              <p>Simulates what happens when an unauthorized 3rd party (e.g. <code>adversary_eve</code>) attempts to download this file without ownership or share permission.</p>
+              <button class="btn btn-danger btn-sm" id="btn-run-unauth-attack" style="margin-top:1rem; width:100%;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                Launch Unauthorized Access Attack
+              </button>
+              <div id="lab-unauth-result" class="tamper-result-box" style="display:none; margin-top:0.85rem;"></div>
+            </div>
+
+            <!-- PROOF 2: ENCRYPTION & CIPHERTEXT PROOF -->
+            <div class="arch-box" style="border-left: 3px solid var(--accent-blue);">
+              <div class="arch-header">
+                <span class="badge blue">PROOF 2</span>
+                <h3>Side-by-Side Plaintext vs Disk Ciphertext (O2)</h3>
+              </div>
+              <p>Demonstrates that the file stored in <code>uploads/</code> contains <strong>zero plaintext bytes</strong>. Compare readable content with unreadable AES-256-CBC ciphertext.</p>
+              <button class="btn btn-primary btn-sm" id="btn-run-encryption-proof" style="margin-top:1rem; width:100%;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                Compare Plaintext vs Stored Ciphertext
+              </button>
+              <div id="lab-enc-result" style="display:none; margin-top:0.85rem;"></div>
+            </div>
+
+            <!-- PROOF 3: INTEGRITY TAMPERING INTERCEPTION -->
+            <div class="arch-box" style="border-left: 3px solid var(--accent-amber);">
+              <div class="arch-header">
+                <span class="badge amber">ATTACK 3</span>
+                <h3>Ciphertext Tampering & SHA-256 Defense (O3)</h3>
+              </div>
+              <p>Simulates a server-side attacker or malicious cloud admin corrupting 1 byte in the ciphertext. Proves download is halted with <strong>HTTP 409 Conflict</strong>.</p>
+              <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+                <button class="btn btn-warning btn-sm" id="btn-lab-tamper" style="flex:1;">
+                  Invert 1 Byte
+                </button>
+                <button class="btn btn-secondary btn-sm" id="btn-lab-test-dl" style="flex:1;">
+                  Test Download
+                </button>
+                <button class="btn btn-secondary btn-sm" id="btn-lab-restore" style="flex:1;">
+                  Restore
+                </button>
+              </div>
+              <div id="lab-tamper-result" class="tamper-result-box" style="display:none; margin-top:0.85rem;"></div>
+            </div>
+
+            <!-- PROOF 4: REVOCATION & EXPIRY PROOF -->
+            <div class="arch-box" style="border-left: 3px solid var(--accent-emerald);">
+              <div class="arch-header">
+                <span class="badge green">PROOF 4</span>
+                <h3>Revocable Access Control Proof (O5)</h3>
+              </div>
+              <p>Proves that granting access creates an authorization entry, while clicking <strong>Revoke</strong> takes immediate effect, blocking the recipient from downloading.</p>
+              <div style="background:var(--bg-input); padding:0.75rem; border-radius:var(--radius-sm); margin-top:1rem; font-size:0.82rem; color:var(--text-muted);">
+                <strong>How to demonstrate live:</strong><br>
+                1. Click Share icon on file table.<br>
+                2. Grant access to a teammate's username.<br>
+                3. Open incognito tab, login as teammate ➔ download succeeds (HTTP 200).<br>
+                4. As owner, click <strong>Revoke</strong>.<br>
+                5. Teammate attempts download ➔ instantly blocked with <strong>HTTP 403 Forbidden</strong>!
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== VIEW 4: ARCHITECTURE & REVIEW 1 SPEC ===== -->
+      <section id="view-architecture-info" class="view-panel" style="display:none;">
+        <div class="card" style="padding: 1.75rem;">
+          <h2 style="margin-bottom: 0.5rem;">Review 1 Cryptographic Architecture & PPT Requirements Mapping</h2>
+          <p class="section-desc" style="margin-bottom: 1.5rem;">CNS Course (26ECSC403) — KLE Technological University | Guide: Prof. Roopa Badami</p>
+
+          <!-- PPT SLIDE 5: USERS & THREAT MATRIX -->
+          <div style="background:var(--bg-input); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:1.25rem; margin-bottom:1.5rem;">
+            <h3 style="font-size:1rem; font-weight:800; color:#60a5fa; margin-bottom:0.75rem;">👥 PPT Slide 5: The 3 System Users & Threat Matrix</h3>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1rem;">
+              <div style="background:var(--bg-card); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="font-weight:700; color:var(--accent-emerald); font-size:0.9rem; margin-bottom:0.3rem;">1. File Owner (Alice / Abhinandan)</div>
+                <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.4;">• Uploads & encrypts files (AES-256-CBC)<br>• Retains exclusive ownership<br>• Grants & revokes permissions (read/write)<br>• Has full audit log access</div>
+              </div>
+              <div style="background:var(--bg-card); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="font-weight:700; color:#60a5fa; font-size:0.9rem; margin-bottom:0.3rem;">2. Authorized Recipient (Bob / Sushant)</div>
+                <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.4;">• Granted access by owner via permission record<br>• Can decrypt and download original file<br>• Integrity verified automatically before release<br>• Access terminates immediately upon revocation</div>
+              </div>
+              <div style="background:var(--bg-card); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="font-weight:700; color:var(--accent-rose); font-size:0.9rem; margin-bottom:0.3rem;">3. Unauthorized User / Attacker (Eve)</div>
+                <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.4;">• Attempts direct download or URL manipulation<br>• Has NO valid cryptographic permission<br>• <strong>Blocked immediately with HTTP 403 Forbidden</strong><br>• Recorded in SIEM Audit Trail as attack event</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PPT SLIDE 7: 3 CORE WORKFLOWS -->
+          <div style="background:var(--bg-input); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:1.25rem; margin-bottom:1.5rem;">
+            <h3 style="font-size:1rem; font-weight:800; color:#34d399; margin-bottom:0.75rem;">🔄 PPT Slide 7: The 3 Core Cryptographic Workflows</h3>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1rem;">
+              <div style="background:var(--bg-card); padding:1rem; border-radius:var(--radius-sm); border-left:3px solid var(--accent-blue);">
+                <strong style="color:#60a5fa;">Workflow 1: Upload</strong>
+                <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.4rem; line-height:1.45;">
+                  <strong>1. Authenticate</strong> (JWT Bearer Token)<br>
+                  <strong>2. Check Access</strong> (Valid authenticated user)<br>
+                  <strong>3. Protect File</strong> (Compute SHA-256 hash + AES-256-CBC encrypt with random DEK + Wrap DEK with Master KEK)<br>
+                  <strong>4. Store</strong> (Ciphertext saved to <code>uploads/&lt;uuid&gt;</code>)
+                </p>
+              </div>
+              <div style="background:var(--bg-card); padding:1rem; border-radius:var(--radius-sm); border-left:3px solid var(--accent-emerald);">
+                <strong style="color:var(--accent-emerald);">Workflow 2: Download</strong>
+                <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.4rem; line-height:1.45;">
+                  <strong>1. Authenticate</strong> (Validate JWT session)<br>
+                  <strong>2. Check Access</strong> (Is Owner OR Valid Active Share?)<br>
+                  <strong>3. Verify / Decrypt</strong> (Unwrap DEK + Decrypt ciphertext + Verify SHA-256 digest match)<br>
+                  <strong>4. Download</strong> (Deliver decrypted original payload)
+                </p>
+              </div>
+              <div style="background:var(--bg-card); padding:1rem; border-radius:var(--radius-sm); border-left:3px solid var(--accent-purple);">
+                <strong style="color:#c084fc;">Workflow 3: Sharing & Revocation</strong>
+                <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.4rem; line-height:1.45;">
+                  <strong>1. Owner</strong> selects target file<br>
+                  <strong>2. Select Recipient</strong> (username)<br>
+                  <strong>3. Set Permission</strong> (Read or Read/Write + optional expiry)<br>
+                  <strong>4. Grant Access</strong> (Record delegation in DB)<br>
+                  <strong>5. Revoke</strong> (Owner flips revocation flag; instant 403 block)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- PPT SLIDE 3: OBJECTIVES O1-O5 -->
+          <h3 style="font-size:1rem; font-weight:800; margin-bottom:0.75rem;">🎯 PPT Slide 3: Objectives O1–O5 Implementation Matrix</h3>
+          <div class="arch-grid">
+            <div class="arch-box">
+              <div class="arch-header">
+                <span class="badge blue">O1</span>
+                <h3>Authenticated Access</h3>
+              </div>
+              <p>Registered users only. Protected via <strong>bcrypt (12 rounds)</strong> salted password hashing and stateless <strong>JWT (HMAC-SHA256)</strong> bearer tokens with 24-hour expiry.</p>
+            </div>
+
+            <div class="arch-box">
+              <div class="arch-header">
+                <span class="badge purple">O2</span>
+                <h3>File Confidentiality</h3>
+              </div>
+              <p>Stored files unreadable without decryption. Protected via <strong>AES-256-CBC</strong> with PKCS#7 padding and Two-Tier key hierarchy (per-file DEK wrapped with Master KEK via PBKDF2).</p>
+            </div>
+
+            <div class="arch-box">
+              <div class="arch-header">
+                <span class="badge green">O3</span>
+                <h3>Integrity Protection</h3>
+              </div>
+              <p>Detect any file tampering. Pre-storage <strong>SHA-256 cryptographic digest</strong> verified upon every download. If 1 bit is altered, download is aborted with HTTP 409.</p>
+            </div>
+
+            <div class="arch-box">
+              <div class="arch-header">
+                <span class="badge amber">O4</span>
+                <h3>Secure Communication</h3>
+              </div>
+              <p>Data protected in transit. Client-server requests served over <strong>HTTPS / TLS 1.3</strong>, eliminating Man-in-the-Middle (MitM) eavesdropping and packet sniffing.</p>
+            </div>
+
+            <div class="arch-box">
+              <div class="arch-header">
+                <span class="badge teal">O5</span>
+                <h3>Permission-Based Sharing</h3>
+              </div>
+              <p>Revocable access control. Granular <code>read</code> and <code>write</code> permissions with optional timestamped expiry and one-click instant revocation.</p>
+            </div>
+
+            <div class="arch-box">
+              <div class="arch-header">
+                <span class="badge red">Lab</span>
+                <h3>Live Attack & Defense Lab</h3>
+              </div>
+              <p>Interactive demonstration mode built to show Prof. Roopa Badami live proofs of 3rd-party interception, ciphertext encryption, and tamper detection!</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===== MODAL 1: CRYPTO INSPECTOR MODAL ===== -->
+<div class="modal-overlay" id="crypto-modal" style="display:none;">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-icon purple">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div>
+          <h3 id="modal-crypto-filename">File Cryptographic Inspector</h3>
+          <p class="modal-sub">Live inspection of cryptographic keys, IV, hashes, and ciphertext chunk</p>
+        </div>
+      </div>
+      <button class="modal-close-btn" id="crypto-modal-close">&times;</button>
+    </div>
+
+    <div class="modal-body" id="crypto-modal-body">
+      <!-- Loading state -->
+      <div id="crypto-loading" style="padding: 2rem; text-align: center;">Loading cryptographic parameters...</div>
+
+      <!-- Loaded content -->
+      <div id="crypto-content" style="display:none;">
+        
+        <!-- Algorithm Cards Row -->
+        <div class="crypto-meta-row">
+          <div class="crypto-meta-item">
+            <span class="meta-label">Payload Cipher</span>
+            <span class="meta-val highlight" id="ci-cipher">AES-256-CBC</span>
+          </div>
+          <div class="crypto-meta-item">
+            <span class="meta-label">Key Size / Block</span>
+            <span class="meta-val" id="ci-keysize">256 bits / 128 bits</span>
+          </div>
+          <div class="crypto-meta-item">
+            <span class="meta-label">Key Hierarchy</span>
+            <span class="meta-val" id="ci-kdf">PBKDF2 100k rounds KEK</span>
+          </div>
+          <div class="crypto-meta-item">
+            <span class="meta-label">Integrity Status</span>
+            <span class="meta-val" id="ci-integrity-badge">VERIFIED</span>
+          </div>
+        </div>
+
+        <!-- Key & IV Breakdown -->
+        <div class="crypto-section">
+          <h4>Cryptographic Vectors</h4>
+          <div class="crypto-field">
+            <label>Plaintext SHA-256 Digest (Integrity Standard):</label>
+            <div class="code-box" id="ci-sha256">...</div>
+          </div>
+
+          <div class="crypto-field">
+            <label>Initialisation Vector (IV - 16 bytes):</label>
+            <div class="code-box" id="ci-iv">...</div>
+          </div>
+
+          <div class="crypto-field">
+            <label>Wrapped Data Encryption Key (DEK encrypted via Master KEK):</label>
+            <div class="code-box" id="ci-dek">...</div>
+          </div>
+        </div>
+
+        <!-- Raw Ciphertext Hex Dump Preview -->
+        <div class="crypto-section">
+          <h4>Raw Ciphertext Chunk (Storage Disk Dump)</h4>
+          <pre class="hex-dump-box" id="ci-hexdump">Loading hex dump...</pre>
+        </div>
+
+        <!-- Live Tamper Test Verification Area -->
+        <div class="crypto-section tamper-section">
+          <h4>Academic Verification & Attack Simulation</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            Test the system's ability to detect unauthorized modifications (Objective O3).
+          </p>
+          <div class="tamper-actions-row">
+            <button class="btn btn-primary btn-sm" id="ci-run-verify-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Verify Integrity Now
+            </button>
+            <button class="btn btn-warning btn-sm" id="ci-tamper-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Simulate 1-Byte Tamper
+            </button>
+            <button class="btn btn-secondary btn-sm" id="ci-restore-btn" style="display:none;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              Restore Original Ciphertext
+            </button>
+          </div>
+          <div id="ci-tamper-result" class="tamper-result-box" style="display:none;"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL 2: SHARE MODAL ===== -->
+<div class="modal-overlay" id="share-modal" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title-wrap">
+        <div class="modal-icon blue">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div>
+          <h3>Grant Granular Access</h3>
+          <p class="modal-sub" id="modal-share-filename">File: ...</p>
+        </div>
+      </div>
+      <button class="modal-close-btn" id="share-modal-close">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <form id="share-form" novalidate>
+        <div class="form-group">
+          <label for="share-username">Recipient Username</label>
+          <input type="text" id="share-username" placeholder="e.g. aditya_k" required />
+        </div>
+
+        <div class="form-group">
+          <label>Permission Level</label>
+          <div class="permission-options">
+            <label class="radio-label">
+              <input type="radio" name="share-perm" value="read" checked />
+              <div class="radio-box">
+                <strong>Read / Download</strong>
+                <span>Allows recipient to verify hash and decrypt file</span>
+              </div>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="share-perm" value="write" />
+              <div class="radio-box">
+                <strong>Read & Write</strong>
+                <span>Allows recipient to download and update file</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="share-expiry">Access Expiry Date (Optional)</label>
+          <input type="date" id="share-expiry" />
+          <small class="form-hint">Access will be automatically blocked after this date</small>
+        </div>
+
+        <div id="share-error" class="form-error"></div>
+      </form>
+
+      <!-- Active Shares on this file -->
+      <div class="share-list-section">
+        <h4>Active Delegations on this File</h4>
+        <div id="shares-items"><p style="color:var(--text-muted); font-size:.85rem;">Loading shares...</p></div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
+      <button class="btn btn-primary" id="share-submit-btn">
+        <span id="share-btn-text">Grant Access</span>
+        <span id="share-spinner" class="spinner" style="display:none;"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notifications container -->
+<div id="toast-container"></div>
+
+<!-- Scripts -->
+<script src="js/auth.js"></script>
+<script src="js/share.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>
